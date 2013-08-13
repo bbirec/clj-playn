@@ -3,7 +3,7 @@
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.3.0"]
-                 [com.googlecode.playn/playn-core "1.1"]
-                 [com.googlecode.playn/playn-java "1.1"]]
+  :dependencies [[org.clojure/clojure "1.5.1"]
+                 [com.googlecode.playn/playn-core "1.7.2"]
+                 [com.googlecode.playn/playn-java "1.7.2"]]
   :main clj-playn)
