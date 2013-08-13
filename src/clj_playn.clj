@@ -46,21 +46,21 @@
 
 (defonce anis (atom []))
 
-(defn move-sprite [key from to duration]
+(defn move-by [key by duration]
   (swap! anis
          #(conj %1
                 {:fn :move
                  :key key
-                 :from from
-                 :to to
                  :duration duration
                  :elapsed 0
 
-                 :total-x (- (first to) (first from))
-                 :total-y (- (second to) (second from))
+                 :total-x (first by)
+                 :total-y (second by)
                  :dx 0
                  :dy 0})))
 
+(defn ratio [v dt duration]
+  (/ (* dt v) duration))
 
 
 ;;;; Entry point
@@ -86,8 +86,8 @@
       (map
        (fn [a]
          (let [duration (:duration a)
-               dx (/ (* dt (:total-x a)) duration)
-               dy (/ (* dt (:total-y a)) duration)]
+               dx (ratio (:total-x a) dt duration)
+               dy (ratio (:total-y a) dt duration)]
            
            ;; Update values
            (merge a
