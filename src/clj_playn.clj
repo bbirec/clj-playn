@@ -15,20 +15,29 @@
 (defn root-layer []
   (.rootLayer (graphics)))
 
+(defn new-image [w h]
+  (.createImage (graphics) w h))
+
+(defmacro with-canvas [canvas w h & body]
+  `(let [img# (new-image ~w ~h)
+         ~canvas (.canvas img#)]
+     ~@body
+     img#))
+
+
 ;;;; Sprites
 
 (defonce sprites (atom {}))
 
-(defn load-sprite [key file]
-  (when (nil? (get @sprites key))
-    (println (str "Load image : " file " as " key))
-    (swap! sprites
+(defn load-sprite [key img]
+  (swap! sprites
            #(assoc %1 key
-                   (let [img (-> (assets)
-                                 (.getImage file))]
-                     (-> (graphics)
-                         (.createImageLayer img)))))))
+                   (-> (graphics)
+                       (.createImageLayer img)))))
 
+(defn load-sprite-from-file [key file]
+  (println (str "Load image : " file " as " key))
+  (load-sprite key (-> (assets) (.getImage file))))
 
 (defn add-sprite [key]
   (let [layer (get @sprites key)]
@@ -37,6 +46,10 @@
 
 (defn get-sprite [key]
   (get @sprites key))
+
+(defn clear-sprites []
+  (-> (root-layer)
+      (.clear)))
 
 (defn set-translation [key x y]
   (.setTranslation (get-sprite key) x y))
@@ -66,8 +79,7 @@
 ;;;; Entry point
 
 (defn -init []
-  (load-sprite :dog "dog.jpg")
-  (add-sprite :dog))
+  )
 
 (defn -update [delta]
   ;; Delete finished animations
@@ -123,3 +135,17 @@
        (catch Exception e
          (println (.getMessage e)))))))
 
+;;;; Test codes
+
+(defn dog []
+  (load-sprite-from-file :dog "dog.jpg")
+  (add-sprite :dog))
+
+(defn sample []
+  (load-sprite :sample
+               (with-canvas canvas 300 300
+                 (doto canvas
+                   (.setStrokeWidth 10)
+                   (.setStrokeColor 0xffff0000)
+                   (.strokeRect 100 100 100 100))))
+  (add-sprite :sample))
