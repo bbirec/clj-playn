@@ -117,7 +117,7 @@
 
 ;;;; Entry point
 
-(defn -init [])
+(declare -init)
 
 (defn -update [delta]
   ;; Delete finished animations
@@ -164,7 +164,7 @@
     config))
 
 (defn -main [& args]
-  (let [platform (JavaPlatform/register (config))]
+  (let [platform (JavaPlatform/register (config 600 400))]
     (future
       (try 
        (PlayN/run
@@ -213,3 +213,7 @@
                                0 (- (/ h 2) 15))))))
   (add-sprite :button))
 
+(defn -init []
+  (background)
+  (dog)
+  (button))
