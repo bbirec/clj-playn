@@ -24,7 +24,6 @@
      ~@body
      img#))
 
-
 ;;;; Sprites
 
 (defonce sprites (atom {}))
@@ -46,6 +45,10 @@
 
 (defn get-sprite [key]
   (get @sprites key))
+
+(defn remove-sprite [key]
+  (-> (root-layer)
+      (.remove (get @sprites key))))
 
 (defn clear-sprites []
   (-> (root-layer)
@@ -149,3 +152,22 @@
                    (.setStrokeColor 0xffff0000)
                    (.strokeRect 100 100 100 100))))
   (add-sprite :sample))
+
+(defn white-back []
+  (let [w (.width (graphics))
+        h (.height (graphics))]
+   (load-sprite :background
+                (with-canvas canvas w h
+                  (doto canvas
+                    (.setFillColor 0xffffffff)
+                    (.fillRoundRect 0 0 w h 0))
+                  ))
+   (add-sprite :background)))
+
+(defn button []
+  (load-sprite :button
+               (with-canvas canvas 150 50
+                 (doto canvas
+                   (.setFillColor 0xff36a5d7)
+                   (.fillRoundRect 0 0 150 50 5))))
+  (add-sprite :button))
