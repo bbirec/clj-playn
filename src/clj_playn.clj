@@ -1,7 +1,11 @@
 (ns clj-playn
   (:import (playn.core Game$Default
                        Image
-                       PlayN)
+                       PlayN
+                       AbstractFont
+                       TextFormat
+                       TextFormat$Alignment
+                       Font$Style)
            (playn.java JavaPlatform
                        JavaPlatform$Config)))
 
@@ -24,6 +28,37 @@
          ~canvas (.canvas img#)]
      ~@body
      img#))
+
+;;;; Font
+
+(defn font [name style size]
+  (let [style (cond (= style :plain) Font$Style/PLAIN
+                    (= style :bold) Font$Style/BOLD
+                    (= style :italic) Font$Style/ITALIC
+                    (= style :bold-italic) Font$Style/BOLD_ITALIC)]
+    (-> (graphics)
+        (.createFont name style size))))
+
+(defn text-format [font align]
+  (let [align (cond (= align :left) TextFormat$Alignment/LEFT
+                    (= align :right) TextFormat$Alignment/RIGHT
+                    (= align :center) TextFormat$Alignment/CENTER)]
+    (-> (TextFormat.)
+        (.withFont font)
+        (.withAlignment align))))
+
+(defn layout-text [text format]
+  (-> (graphics)
+      (.layoutText text format)))
+
+(defn draw-text [canvas text font-name style size x y]
+  (-> canvas
+      (.fillText
+       (layout-text
+        text
+        (text-format
+         (font font-name style size) :left))
+       x y)))
 
 ;;;; Sprites
 
@@ -149,30 +184,32 @@
   (load-sprite-from-file :dog "dog.jpg")
   (add-sprite :dog))
 
-(defn sample []
-  (load-sprite :sample
-               (with-canvas canvas 300 300
-                 (doto canvas
-                   (.setStrokeWidth 10)
-                   (.setStrokeColor 0xffff0000)
-                   (.strokeRect 100 100 100 100))))
-  (add-sprite :sample))
-
-(defn white-back []
+(defn background []
   (let [w (.width (graphics))
         h (.height (graphics))]
    (load-sprite :background
                 (with-canvas canvas w h
                   (doto canvas
                     (.setFillColor 0xffffffff)
-                    (.fillRoundRect 0 0 w h 0))
-                  ))
+                    (.fillRoundRect 0 0 w h 0))))
    (add-sprite :background)))
 
+
+
 (defn button []
-  (load-sprite :button
-               (with-canvas canvas 150 50
-                 (doto canvas
-                   (.setFillColor 0xff36a5d7)
-                   (.fillRoundRect 0 0 150 50 5))))
+  (let [w 300
+        h 100
+        radius 5]
+   (load-sprite :button
+                (with-canvas canvas w h
+                  (doto canvas
+                    (.setFillColor 0xff36a5d7)
+                    (.fillRoundRect 0 0 w h radius)
+                    (.setFillColor 0xffffffff)
+                    (draw-text "Welcome to clj-playn!"
+                               "Arial"
+                               :plain
+                               30
+                               0 (- (/ h 2) 15))))))
   (add-sprite :button))
+
