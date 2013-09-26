@@ -2,7 +2,8 @@
   (:import (playn.core Game$Default
                        Image
                        PlayN)
-           (playn.java JavaPlatform)))
+           (playn.java JavaPlatform
+                       JavaPlatform$Config)))
 
 ;; Utils
 
@@ -81,8 +82,7 @@
 
 ;;;; Entry point
 
-(defn -init []
-  )
+(defn -init [])
 
 (defn -update [delta]
   ;; Delete finished animations
@@ -122,9 +122,14 @@
       (.setTx sprite x)
       (.setTy sprite y))))
 
+(defn config [w h]
+  (let [config (JavaPlatform$Config.)]
+    (set! (. config width) w)
+    (set! (. config height) h)
+    config))
 
 (defn -main [& args]
-  (let [platform (JavaPlatform/register)]
+  (let [platform (JavaPlatform/register (config))]
     (future
       (try 
        (PlayN/run
